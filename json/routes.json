@@ -1,0 +1,66 @@
+{
+
+
+    "CPH1_VH": {
+                "title": "CPH1 VH",  
+                "geometry":"circle",
+                
+                
+                "GM_trips": [7792,7805,8040,8042,8227,9289,10204,10218],
+                "GM_validated_passes": {"7792":[0,1],"7805":[1,2],"8040":[1],"8227":[2],"9289":[0],"10204":[1],"10218":[0]},
+                
+                "GM_validated_passes_original": {"7792":[0,1],"7805":[1,2],"8040":[1],"8042":[0,1,2],"8227":[0,1,2],"9289":[0,1],"10204":[0,1],"10218":[0,1]},
+                "GM_additional_info":{"7792":{"date":"April2021", "start":"markokirken_towards_kongensnytorv"}},
+                
+                "P79_trips":["d6b1cf27-41ed-43b6-8050-2068ef941a0a"],
+                "P79_additional_info": {"72454ca1-b7b9-4d1c-a22a-f7ee409010eb":{"date":"June2020"}, "d6b1cf27-41ed-43b6-8050-2068ef941a0a":{"date":"Sep2020"}},
+                
+                "VIAFRIK_trips":["32158db7-f63a-4396-9bba-65101cecd75f"],
+                
+                "ARAN_trips":["6d89136a-64cf-446a-81e4-4e67bccc0bb9"],
+                "ARAN_additional_info": {"6ea35d27-b61d-4363-95fd-389679bc9a3f":{"date":"June2020"}, "6d89136a-64cf-446a-81e4-4e67bccc0bb9":{"date":"August2020"}}
+                },
+                
+        
+     
+                
+    "CPH1_HH": {
+                "title": "CPH1 HH",
+                "GM_trips": [7505,7509,7511,10446,10900,11360,11367],
+                
+                "GM_validated_passes": {"7505":[0], "10446":[1,2,3,4], "10900":[0,1,3], "11360":[0], "11367":[0,3]},
+                "GM_validated_passes_original": {"7505":[0], "7509":[0], "7511":[0], "10446":[], "10900":[0,1,2,3], "11360":[0,1], "11367":[0,1,2,3]},
+                "GM_additional_info":{},
+                
+                "P79_trips":["8dde98c8-53f2-4b35-beeb-5dddbe2a0583"],
+                "P79_additional_info": {"8dde98c8-53f2-4b35-beeb-5dddbe2a0583":{"date":"Sep2020"}},
+                
+                "Viafrik_trips":["086a9d7f-a47c-4a98-b921-e98d58a92844"],
+                     
+                "ARAN_trips":["4f76becb-2ecc-47ff-b5c0-2041385e4009"],
+                "ARAN_additional_info": {"cddafa6b-cd00-4b5e-aa8f-249046a5f281":{"date":"June2020"}, "4f76becb-2ecc-47ff-b5c0-2041385e4009":{"date":"August2020"}}
+                },
+    
+    "CPH6_VH": {
+                "title": "CPH6 VH",
+                "GM_trips": [13201],
+                "GM_additional_info":{"13201":{"date":"2021-08-27"}},
+               
+                "ARAN_trips":["5f5610ff-7a7a-4bdc-8efd-61a67b4feefa"],
+                "ARAN_additional_info": {"5f5610ff-7a7a-4bdc-8efd-61a67b4feefa":{"date":"2021-08-30"}}
+                },
+                
+    "CPH6_HH": {
+                "title": "CPH6 HH",
+                "GM_trips": [13175],
+                "GM_additional_info":{"13175":{"date":"2021-08-27"}},
+                 
+                "ARAN_trips":["72c05d8f-afe9-42a0-abfb-f289fded44a6"],
+                "ARAN_additional_info": {"72c05d8f-afe9-42a0-abfb-f289fded44a6":{"date":"2021-08-30"}}
+                }            
+    
+                
+}
+
+
+
