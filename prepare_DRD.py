@@ -50,11 +50,6 @@ out_dir = args.out_dir
 preload = args.preload
 dev_mode = args.dev_mode
 
-# Temp
-viafrik = True
-trip  = 7792
-preload = True
-plot = True
 #=========================#
 # PREPARATION 
 #=========================#
