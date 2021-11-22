@@ -17,12 +17,12 @@
                 
                 "VIAFRIK_trips":["32158db7-f63a-4396-9bba-65101cecd75f"],
                 
-                "ARAN_trips":["6d89136a-64cf-446a-81e4-4e67bccc0bb9"],
-                "ARAN_additional_info": {"6ea35d27-b61d-4363-95fd-389679bc9a3f":{"date":"June2020"}, "6d89136a-64cf-446a-81e4-4e67bccc0bb9":{"date":"August2020"}}
+                "ARAN_trips":["9ab9ce62-e197-4672-9c85-c9b37b1c88cd"],
+                "ARAN_additional_info": {"6ea35d27-b61d-4363-95fd-389679bc9a3f":{"date":"June2020"}, "6d89136a-64cf-446a-81e4-4e67bccc0bb9":{"date":"August2020"},
+                    "9ab9ce62-e197-4672-9c85-c9b37b1c88cd":{"date":"June2021"}}
                 },
                 
         
-     
                 
     "CPH1_HH": {
                 "title": "CPH1 HH",
@@ -37,8 +37,9 @@
                 
                 "Viafrik_trips":["086a9d7f-a47c-4a98-b921-e98d58a92844"],
                      
-                "ARAN_trips":["4f76becb-2ecc-47ff-b5c0-2041385e4009"],
-                "ARAN_additional_info": {"cddafa6b-cd00-4b5e-aa8f-249046a5f281":{"date":"June2020"}, "4f76becb-2ecc-47ff-b5c0-2041385e4009":{"date":"August2020"}}
+                "ARAN_trips":["531adaf3-3868-440c-8d92-45a4e0e504fb"],
+                "ARAN_additional_info": {"cddafa6b-cd00-4b5e-aa8f-249046a5f281":{"date":"June2020"}, "4f76becb-2ecc-47ff-b5c0-2041385e4009":{"date":"August2020"},
+                "531adaf3-3868-440c-8d92-45a4e0e504fb":{"date":"June2021"}}
                 },
     
     "CPH6_VH": {

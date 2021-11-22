@@ -1,5 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-@author: Milena Bajic (DTU Compute)
+Created on Tue Nov 16 15:25:07 2021
+
+@author: mibaj
 """
 
 def find_route(trip, route_data):

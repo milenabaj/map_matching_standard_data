@@ -2,14 +2,12 @@
 @author: Milena Bajic (DTU Compute)
 """
 import sys, os, pickle, time
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import mplleaflet
 import seaborn as sns
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator,LogFormatter)
 
-    
 def plot_geolocation(longitudes = None, latitudes = None, name = 'plot', out_dir = '.', plot_firstlast=0, plot_html_map = True, title=None, full_filename = None, preload = False):
             
     # Name
@@ -84,7 +82,10 @@ def plot_geolocation(longitudes = None, latitudes = None, name = 'plot', out_dir
         
         #Give the map tiles some time to load
         time.sleep(10)
-        browser.save_screenshot(printout_name)
+        try:
+            browser.save_screenshot(printout_name)
+        except:
+            pass
         browser.quit()
 
     return fig
@@ -111,4 +112,4 @@ def plot_geolocation_2D(gps_points_1, gps_points_2, name = None, out_dir='.', pl
         mplleaflet.show() 
     return
  
-    
+ 
