@@ -14,6 +14,7 @@ import json
 #=================================#
 # SETTINGS
 #=================================#
+
 # Script arguments
 parser = argparse.ArgumentParser(description='Please provide command line arguments.')
 
@@ -58,17 +59,11 @@ preload_map_matched = args.preload_map_matched
 preload_plots = args.preload_plots
 dev_mode = args.dev_mode
 
-# Temporaraly 
-viafrik = False
-aran = True
-trip  = 7792
-plot = False
-preload_map_matched = True
-do_map_match = False
 
 #=========================#
 # PREPARATION 
 #=========================#
+
 # Check if exactly one data type is chosen
 datatypes_bool = [p79, aran, viafrik]
 n_datatypes = datatypes_bool.count(True)
@@ -135,9 +130,12 @@ out_dir_plots = '{0}/plots'.format(out_dir_route)
 if not os.path.exists(out_dir_plots):
     os.makedirs(out_dir_plots)
  
+    
+ 
 #=========================#
 # PROCESSING 
-#=========================#        
+#=========================# 
+       
 # Process trips
 for trip in trips_thisroute:
     
@@ -161,58 +159,29 @@ for trip in trips_thisroute:
              
     # Else do the pipeline
     else:
-        '''
-        # Load data
-        if dev_mode:
-            DRD_data, iri, DRD_trips = load_DRD_data(trip, p79 = p79, aran = aran, load_nrows = 10, preload = True) 
-        else:
-            if viafrik:
-                DRD_data = load_viafrik_data(trips_thisroute[0])
-                iri = None
-            elif aran:
-                DRD_data, iri, DRD_trips = load_DRD_data(trip, p79 = p79, aran = aran, dev_mode = dev_mode) 
-                RD_data.dropna(subset=['lat','lon'], inplace=True)  # Drop nans
-                iri = None
-            else:
-                DRD_data, iri, DRD_trips = load_DRD_data(trip, p79 = p79, aran = aran) 
-        '''
-        if viafrik:
-            DRD_data = load_viafrik_data(trips_thisroute[0])
-            iri = None
-        else:
-            DRD_data, iri, DRD_trips = load_DRD_data(trip, conn_data, p79 = p79, aran = aran, dev_mode = dev_mode) 
-        sys.exit(0)
-        
-        # Select only trips from one year
-        DRD_trips_filter = filter_DRDtrips_by_year(DRD_trips, sel_2021 = True)
+        DRD_data, iri, DRD_trips = load_DRD_data(trip, conn_data, p79 = p79, aran = aran, viafrik = viafrik, dev_mode = dev_mode) 
 
-        # d[ d['Datetime']<'2020-12-31']
-   
-        #DRD_trips_aran = DRD_trips[DRD_trips['aran']==True]
-        #DRD_trips_aran_2021 =  DRD_trips_aran[DRD_trips_aran['Datetime']>'2021-01-01']
-    
         # Drop duplicate columns (due to ocassical errors in database)
-        DRD_data = DRD_data.T.drop_duplicates().T # Lat and Lon are stored twice for Viafrik?? Error in the database
-        if iri:
-            iri = iri.T.drop_duplicates().T
-        
+        DRD_data, iri = drop_duplicates(DRD_data, iri)
+     
+        # Plot loaded data on Open Streep Map
         if plot:
             plot_geolocation(DRD_data['lon'],  DRD_data['lat'], name = 'route6_{0}'.format(trip), out_dir = out_dir_plots, plot_firstlast = 100, preload = preload_plots)
-          
-    
-        # Map match 
+         
+        # Map match data using OSRM 
         if do_map_match:
-        
-            # Standard vehicle type map matching
+            
+            host = conn_data['osrm']['host']
+            # Map match
             if aran:
                 DRD_data.dropna(subset=['lat','lon'], inplace=True) 
-                DRD_data = map_match_gps_data(DRD_data, lat_name= 'lat', lon_name = 'lon', is_GM = False, out_dir = out_dir_route , out_file_suff = file_suff)
+                DRD_data = map_match_gps_data(DRD_data, host=host, lat_name= 'lat', lon_name = 'lon', out_dir = out_dir_route , out_file_suff = file_suff)
             elif p79:
-                DRD_data = map_match_gps_data(iri, is_GM = False, out_dir = out_dir_route , out_file_suff = file_suff)
+                DRD_data = map_match_gps_data(iri, host=host, out_dir = out_dir_route , out_file_suff = file_suff)
             elif viafrik:
-                DRD_data = map_match_gps_data(DRD_data, lat_name= 'Lat', lon_name = 'Lon', is_GM = False, out_dir = out_dir_route , out_file_suff = file_suff)
+                DRD_data = map_match_gps_data(DRD_data, host=host, lat_name= 'Lat', lon_name = 'Lon', out_dir = out_dir_route , out_file_suff = file_suff)
            
-            # Plot corrected trajectory on OSRM
+            # Plot corrected trajectory on Open Streep Map
             if plot:
                 plot_geolocation(DRD_data['lon_map'],  DRD_data['lat_map'], name = 'DRD_{0}_GPS_mapmatched_gpspoints'.format(trip), out_dir = out_dir_plots, plot_firstlast = 100, preload = preload_plots)
             

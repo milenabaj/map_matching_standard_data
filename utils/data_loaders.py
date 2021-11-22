@@ -1,5 +1,6 @@
 """
 @author: Milena Bajic (DTU Compute)
+e-mail: lenka.bajic@gmail.com
 """
 import pandas as pd
 import numpy as np
@@ -11,7 +12,7 @@ from datetime import datetime
 import pickle
 from json import loads
 
-def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False, dev_mode = False, load_n_rows = 500):
+def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False, viafrik = False, dev_mode = False, load_n_rows = 500):
     '''
     
     Use this function to load and examin DRD data.
@@ -66,11 +67,10 @@ def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False
     print('Selecting data for trip: {0}'.format(DRD_trip))
     if aran:
         quory = 'SELECT * FROM "DRDMeasurements" WHERE "FK_Trip"=\'{0}\' ORDER BY "TS_or_Distance" ASC'.format(DRD_trip)
-    elif p79:
-        #quory = 'SELECT "DRDMeasurementId","TS_or_Distance","T","lat","lon","message" FROM "DRDMeasurements" WHERE ("FK_Trip"=\'{0}\' AND "lat"<={1} AND "lat">={2} AND "lon"<={3} AND "lon">={4}) ORDER BY "TS_or_Distance" ASC'.format(DRD_trip, lat_max, lat_min, lon_max, lon_min)
+    elif (p79 or viafrik):
         quory = 'SELECT "DRDMeasurementId","TS_or_Distance","T","lat","lon","message" FROM "DRDMeasurements" WHERE "FK_Trip"=\'{0}\' ORDER BY "TS_or_Distance" ASC'.format(DRD_trip)
     else:
-        print('Set either p79 or ARAN to true. Other vehicle trips not implemented yet.')
+        print('Set either p79 or aran or viafrik to True.')
         sys.exit(0)
     
     # Set the number of rows to load
@@ -87,18 +87,22 @@ def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False
     sql_data.sort_values(by ='TS_or_Distance', inplace=True)
     sql_data.reset_index(drop = True, inplace=True)
     
+    # Preparation depending on data type
     if aran:
         drop_cols = ['DRDMeasurementId', 'T', 'isComputed', 'FK_Trip', 'FK_MeasurementType', 'Created_Date',
        'Updated_Date','BeginChainage','EndChainage']
         extract_string_column(sql_data)
         sql_data.drop(drop_cols, axis=1, inplace = True)
-         
-    if p79:
+    elif viafrik:
+        sql_data['Message'] = sql_data.message.apply(lambda msg: filter_keys(loads(msg), remove_gm=False))
+        sql_data.drop(columns=['message'],inplace=True,axis=1)
+        sql_data.reset_index(inplace=True, drop=True)
+        sql_data = sql_data[['TS_or_Distance','T', 'lat', 'lon','Message']]
+        sql_data = pd.concat([sql_data, extract_string_column(sql_data,'Message')],axis=1)
+    elif p79:
         iri =  sql_data[sql_data['T']=='IRI']
         iri['IRI_mean'] = iri.message.apply(lambda message: (loads(message)['IRI5']+loads(message)['IRI21'])/2)
         iri.drop(columns=['message','DRDMeasurementId', 'T',],inplace=True,axis=1)
-        
-        # Filter iri
         iri = iri[(iri.lat>0) & (iri.lon>0)]
         iri.reset_index(drop=True, inplace=True)
     
@@ -106,13 +110,7 @@ def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False
     print('Getting DRD trips information')
     quory = 'SELECT * FROM "Trips" WHERE "TaskId"=\'0\''
     cursor = conn.cursor()
-    trips = pd.read_sql(quory, conn) 
-    
-    # Filter trips by type
-    if aran:
-        trips['aran']= trips['StartPositionDisplay'].apply([lambda row:'Aran' in row])
-        trips = trips[trips['aran']==True]
-        
+    trips = pd.read_sql(quory, conn)         
         
     # Close connection
     if(conn):
@@ -120,44 +118,11 @@ def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False
         conn.close()
         print("PostgreSQL connection is closed")
         
-    # Return
     if p79:   
         return sql_data, iri, trips
-    elif aran:
+    else:
         return sql_data, None, trips
 
-
-def load_viafrik_data(trip_id, all_sensors = True, load_nrows = -1):
-    
-    # Set up connection
-     #==============#
-    print("\nConnecting to PostgreSQL database to load GM")
-    conn = psycopg2.connect(database="postgres", user="mibaj", password="Vm9jzgBH", host="liradbdev.compute.dtu.dk", port=5432)
-   
-    quory = 'SELECT "DRDMeasurementId","TS_or_Distance","T","lat","lon","message" FROM "DRDMeasurements" WHERE "FK_Trip"=\'{0}\' ORDER BY "TS_or_Distance" ASC'.format(trip_id)
-
-    print(quory)
-    cursor = conn.cursor()
-    meas_data = pd.read_sql(quory, conn, coerce_float = True)
-    meas_data.reset_index(inplace=True, drop=True) 
-    
-    # Extract message
-    #=================# 
-    meas_data['Message'] = meas_data.message.apply(lambda msg: filter_keys(loads(msg), remove_gm=False))
-    meas_data.drop(columns=['message'],inplace=True,axis=1)
-    meas_data.reset_index(inplace=True, drop=True)
-    meas_data = meas_data[['TS_or_Distance','T', 'lat', 'lon','Message']]
-
-    meas_data = pd.concat([meas_data, extract_string_column(meas_data,'Message')],axis=1)
-     
-    # Close connection
-    #==============#
-    if(conn):
-        cursor.close()
-        conn.close()
-        print("PostgreSQL connection is closed")
-        
-    return meas_data
 
 
 def filter_keys(msg, remove_gm = True):
@@ -209,3 +174,9 @@ def filter_DRDtrips_by_year(DRD_trips, sel_2021 = False, sel_2020 = False):
     return DRD_trips
     
 
+def drop_duplicates(DRD_data, iri):
+    # Drop duplicate columns (due to ocassical errors in database)
+    DRD_data = DRD_data.T.drop_duplicates().T #
+    if iri:
+        iri = iri.T.drop_duplicates().T
+    return DRD_data, iri

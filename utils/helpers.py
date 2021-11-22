@@ -1,13 +1,25 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Nov 16 15:25:07 2021
-
-@author: mibaj
+@author: Milena Bajic (DTU Compute)
+e-mail: lenka.bajic@gmail.com
 """
 
 def find_route(trip, route_data):
+    """
     
+
+    Parameters
+    ----------
+    trip : STRING
+        Trip id.
+    route_data : dictionary
+        Dictionary file with routes information about the routes.
+
+    Returns
+    -------
+    route : STRING
+        Route name on which this trip is.
+
+    """
     # Try to find the route name for the given trip
     route = None
     for route_cand in route_data.keys():

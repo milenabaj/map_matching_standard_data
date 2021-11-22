@@ -1,5 +1,6 @@
 """
 @author: Milena Bajic (DTU Compute)
+e-mail: lenka.bajic@gmail.com
 """
 import pandas as pd
 import numpy as np
@@ -333,7 +334,7 @@ def do_kNN_matching_iri(GM_data, iri, GM_task_id, DRD_id, gps_points_to_plot = -
       
     return iri    
 
-def map_match(gps, lat_name = 'lat', lon_name = 'lon', r=50):
+def map_match(gps, host, lat_name = 'lat', lon_name = 'lon', r=50):
     # Map match a chunk of gps data
     lat = gps[lat_name]
     lon = gps[lon_name]
@@ -343,7 +344,7 @@ def map_match(gps, lat_name = 'lat', lon_name = 'lon', r=50):
     print(lon)
     
     timeout = 100
-    client = osrm.Client(host='http://liradbdev.compute.dtu.dk:5000', profile='car', timeout=timeout)
+    client = osrm.Client(host=host, profile='car', timeout=timeout)
     match_response = client.match(coordinates=c, radiuses=radiuses)
     
     t = match_response['tracepoints']
@@ -357,7 +358,7 @@ def map_match(gps, lat_name = 'lat', lon_name = 'lon', r=50):
     return gps
 
 
-def map_match_gps_data(data, is_GM, lat_name = 'lat', lon_name = 'lon', out_dir ='.', out_file_suff = '', preload = False):
+def map_match_gps_data(data, host, is_GM = False, lat_name = 'lat', lon_name = 'lon', out_dir ='.', out_file_suff = '', preload = False):
     
     out_filename = '{0}/map_matched_data{1}.pickle'.format(out_dir, out_file_suff)
     if os.path.exists(out_filename) and preload:
@@ -366,8 +367,6 @@ def map_match_gps_data(data, is_GM, lat_name = 'lat', lon_name = 'lon', out_dir 
         return gps_result  
     
     else:
-        # Take GPS data (because GM data does not lat,lon in all records)
-        #gps_data = data.dropna(subset=[lon_name, lat_name]) 
         gps_data = data[[lat_name, lon_name]]
         
         # Create GPS chunks
@@ -378,7 +377,7 @@ def map_match_gps_data(data, is_GM, lat_name = 'lat', lon_name = 'lon', out_dir 
         for i, gps_chunk in enumerate(gps_chunks):
             if i%100==0:
                 print(' === Chunk: {0}/{1} ===='.format(i, n))
-            map_match(gps_chunk, lat_name, lon_name) #it appends the result into the original dataframe
+            map_match(gps_chunk, host, lat_name, lon_name) #it appends the result into the original dataframe
         gps_result = pd.concat(gps_chunks)
       
         # Clean non-matched points

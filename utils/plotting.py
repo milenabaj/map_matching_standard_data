@@ -1,5 +1,6 @@
 """
 @author: Milena Bajic (DTU Compute)
+e-mail: lenka.bajic@gmail.com
 """
 import sys, os, pickle, time
 import numpy as np
@@ -8,8 +9,38 @@ import mplleaflet
 import seaborn as sns
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator,LogFormatter)
 
-def plot_geolocation(longitudes = None, latitudes = None, name = 'plot', out_dir = '.', plot_firstlast=0, plot_html_map = True, title=None, full_filename = None, preload = False):
-            
+def plot_geolocation(longitudes, latitudes, name = 'map', out_dir = '.', plot_firstlast=0, plot_html_map = True, title=None, full_filename = None, preload = False):
+    """
+    
+    A function which plots and saves GPS coordinates on Open Street Map in a web-browser.
+    
+    Parameters
+    ----------
+    longitudes : array-like object
+        Trip longitudes.
+    latitudes :  array-like object
+        Trip latitudes.
+    name : STRING, optional
+        The plot prefix. The default is 'map'.
+    out_dir : STRING, optional
+        Output directory. The default is '.'.
+    plot_firstlast : INT, optional
+        The number of the initial and ending point to plot. The default is 0.
+    plot_html_map : BOOL, optional
+        Plot GPS coordinates in web browser. The default is True.
+    title : STRING, optional
+        Plot title. The default is None.
+    full_filename : STRING, optional
+        Full filename when saving the plot. The default is None.
+    preload : TYPE, optional
+        DESCRIPTION. The default is False.
+
+    Returns
+    -------
+    fig : TYPE
+        DESCRIPTION.
+
+    """        
     # Name
     if full_filename:
         name = full_filename.replace('.pickle','.png')
@@ -91,25 +122,45 @@ def plot_geolocation(longitudes = None, latitudes = None, name = 'plot', out_dir
     return fig
 
 
-def plot_geolocation_2D(gps_points_1, gps_points_2, name = None, out_dir='.', plot_firstlast=1):
-    (lon1,lat1) = gps_points_1
-    (lon2,lat2) = gps_points_2
+def plot_geolocation_2D(gps_points_1, gps_points_2, name = 'map', out_dir='.', plot_firstlast=1):
+       
+     """
     
-    fig,ax=plt.subplots()
+     A function which plots GPS coordinates of 2 trips on Open Street Map in a web-browser.
     
-    ax.scatter(lon1, lat1, s = 15, c='dodgerblue',marker='o',alpha=0.6)
-    if plot_firstlast!=0:
-        ax.scatter(lon1[0:plot_firstlast], lat1[0:plot_firstlast], s = 50, c='yellow',marker='o',alpha=1)
+     Parameters
+     ----------
+     gps_points_1 : tuple of array-like objects
+        Pass as (Longitudes, Latitudes) of trip 1
+     gps_points_2 : tuple of array-like objects
+        Pass as (Longitudes, Latitudes) of trip 2
+     name : STRING, optional
+        The plot prefix. The default is 'map'.
+     out_dir : STRING, optional
+        Output directory. The default is '.'.
+     plot_firstlast : INT, optional
+        The number of the initial and ending point to plot. The default is 0.
+
+     """     
     
-    ax.scatter(lon2, lat2, s = 8, c='yellow',marker='o',alpha=0.3) 
-    if plot_firstlast!=0:
-        ax.scatter(lon2[-plot_firstlast:], lat2[-plot_firstlast:], s = 50, c='black',marker='o',alpha=0.4) 
+     (lon1,lat1) = gps_points_1
+     (lon2,lat2) = gps_points_2
+    
+     fig,ax=plt.subplots()
+    
+     ax.scatter(lon1, lat1, s = 15, c='dodgerblue',marker='o',alpha=0.6)
+     if plot_firstlast!=0:
+         ax.scatter(lon1[0:plot_firstlast], lat1[0:plot_firstlast], s = 50, c='yellow',marker='o',alpha=1)
+    
+     ax.scatter(lon2, lat2, s = 8, c='yellow',marker='o',alpha=0.3) 
+     if plot_firstlast!=0:
+         ax.scatter(lon2[-plot_firstlast:], lat2[-plot_firstlast:], s = 50, c='black',marker='o',alpha=0.4) 
      
-    # Name
-    if name:
-        mplleaflet.show(path='{0}/map_{1}.html'.format(out_dir, name))
-    else:
-        mplleaflet.show() 
-    return
+     # Name
+     if name:
+         mplleaflet.show(path='{0}/map_{1}.html'.format(out_dir, name))
+     else:
+         mplleaflet.show() 
+     return
  
  
