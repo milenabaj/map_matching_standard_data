@@ -32,6 +32,19 @@ def find_route(trip, route_data):
         print('Route not found.')
         return None
         
-             
+def set_original_columns(p79 = False, aran = False, viafrik = False):          
+    if p79:
+        lat_name = 'lat'
+        lon_name = 'lon'
+        datatype = 'p79'
+    elif aran:
+        lat_name = 'lat'
+        lon_name = 'lon'
+        datatype = 'aran'
+    elif viafrik:
+        lat_name = 'Lat'
+        lon_name = 'Lon'
+        datatype = 'viafrik'
 
+    return datatype, lat_name, lon_name
     

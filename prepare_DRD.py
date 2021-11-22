@@ -115,13 +115,10 @@ if route:
 # Create output directory for this route
 if p79:
     out_dir_route = '{0}/P79_processesed_data/{1}'.format(out_dir, route)
-    datatype = 'p79'
 elif aran:
     out_dir_route = '{0}/ARAN_processesed_data/{1}'.format(out_dir, route)
-    datatype = 'aran'
 elif viafrik:
     out_dir_route = '{0}/VIAFRIK_processesed_data/{1}'.format(out_dir, route)
-    datatype = 'viafrik'
 if not os.path.exists(out_dir_route):
     os.makedirs(out_dir_route)
 
@@ -135,7 +132,8 @@ if not os.path.exists(out_dir_plots):
 #=========================#
 # PROCESSING 
 #=========================# 
-       
+datatype, lat_name, lon_name = set_original_columns( p79 = p79, aran = aran, viafrik = viafrik)
+
 # Process trips
 for trip in trips_thisroute:
     
@@ -145,13 +143,14 @@ for trip in trips_thisroute:
             
     # Load if asked to preload the map matched file and if it exists 
     if do_map_match and preload_map_matched:
+        
         if os.path.exists(full_map_match_filename):
             print('Loading map matched result: {0}'.format(full_map_match_filename))
             DRD_data = pd.read_pickle(full_map_match_filename)
          
             # Plot corrected trajectory on OSRM
             if plot:
-                plot_geolocation(map_matched_data['lon_map'],  map_matched_data['lat_map'], name = 'DRD_{0}_GPS_mapmatched_gpspoints'.format(trip), out_dir = out_dir_plots, plot_firstlast = 100, preload = preload_plots)
+                plot_geolocation(DRD_data['lon_map'],  DRD_data['lat_map'], name = 'DRD_{0}_GPS_mapmatched_gpspoints'.format(trip), out_dir = out_dir_plots, plot_firstlast = 100, preload = preload_plots)
                 
         else:
              print('Map match output file not found. Exiting')
@@ -171,15 +170,15 @@ for trip in trips_thisroute:
         # Map match data using OSRM 
         if do_map_match:
             
-            host = conn_data['osrm']['host']
+            # Clean missing GPS coordinates
+            DRD_data.dropna(subset=[lat_name,lon_name], inplace=True) 
+                          
             # Map match
-            if aran:
-                DRD_data.dropna(subset=['lat','lon'], inplace=True) 
-                DRD_data = map_match_gps_data(DRD_data, host=host, lat_name= 'lat', lon_name = 'lon', out_dir = out_dir_route , out_file_suff = file_suff)
-            elif p79:
-                DRD_data = map_match_gps_data(iri, host=host, out_dir = out_dir_route , out_file_suff = file_suff)
-            elif viafrik:
-                DRD_data = map_match_gps_data(DRD_data, host=host, lat_name= 'Lat', lon_name = 'Lon', out_dir = out_dir_route , out_file_suff = file_suff)
+            host = conn_data['osrm']['host']
+            if p79:
+                DRD_data = map_match_gps_data(iri, host=host, lat_name= lat_name, lon_name = lon_name, out_dir = out_dir_route , out_file_suff = file_suff)
+            else:
+                DRD_data = map_match_gps_data(DRD_data, host=host, lat_name= lat_name, lon_name = lon_name, out_dir = out_dir_route , out_file_suff = file_suff)
            
             # Plot corrected trajectory on Open Streep Map
             if plot:
