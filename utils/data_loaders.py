@@ -12,6 +12,7 @@ from datetime import datetime
 import pickle
 from json import loads
 
+
 def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False, viafrik = False, dev_mode = False, load_n_rows = 500):
     '''
     
@@ -93,6 +94,7 @@ def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False
        'Updated_Date','BeginChainage','EndChainage']
         extract_string_column(sql_data)
         sql_data.drop(drop_cols, axis=1, inplace = True)
+        sql_data.replace(np.NaN, 0, inplace = True)
     elif viafrik:
         sql_data['Message'] = sql_data.message.apply(lambda msg: filter_keys(loads(msg), remove_gm=False))
         sql_data.drop(columns=['message'],inplace=True,axis=1)
@@ -101,8 +103,10 @@ def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False
         sql_data = pd.concat([sql_data, extract_string_column(sql_data,'Message')],axis=1)
     elif p79:
         iri =  sql_data[sql_data['T']=='IRI']
-        iri['IRI_mean'] = iri.message.apply(lambda message: (loads(message)['IRI5']+loads(message)['IRI21'])/2)
-        iri.drop(columns=['message','DRDMeasurementId', 'T',],inplace=True,axis=1)
+        extract_string_column(iri)
+        iri.dropna(subset=['IRI5','IRI21'],inplace=True)
+        iri['IRI_mean'] = iri.apply(lambda row: (row['IRI5']+row['IRI21'])/2,axis=1)
+        iri.drop(columns=['DRDMeasurementId', 'T','IRI5','IRI21'],inplace=True,axis=1)
         iri = iri[(iri.lat>0) & (iri.lon>0)]
         iri.reset_index(drop=True, inplace=True)
     
@@ -122,8 +126,6 @@ def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False
         return sql_data, iri, trips
     else:
         return sql_data, None, trips
-
-
 
 def filter_keys(msg, remove_gm = True):
     if remove_gm:
@@ -177,6 +179,6 @@ def filter_DRDtrips_by_year(DRD_trips, sel_2021 = False, sel_2020 = False):
 def drop_duplicates(DRD_data, iri):
     # Drop duplicate columns (due to ocassical errors in database)
     DRD_data = DRD_data.T.drop_duplicates().T #
-    if iri:
+    if iri is not None:
         iri = iri.T.drop_duplicates().T
     return DRD_data, iri
