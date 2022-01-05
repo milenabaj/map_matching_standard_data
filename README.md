@@ -1,3 +1,5 @@
+Author: Milena Bajic
+
 # map_matching_standard_data
 A package which preprocesses standard data for analysis. The code performs map matching using the OSRM service, running a Hidden Markov Model in the background. 
 
