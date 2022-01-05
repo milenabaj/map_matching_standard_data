@@ -18,16 +18,20 @@ import json
 # Script arguments
 parser = argparse.ArgumentParser(description='Please provide command line arguments.')
 
+# Route and trip - set one of the two
 parser.add_argument('--route', default= None, help='Process all trips on this route, given in json file.')
-parser.add_argument('--trip', default = None, type=int, help='Process this trip only. The route name will be loaded from jthe json file.')
+parser.add_argument('--trip', default = 7792, type=int, help='Process this trip only. The route name will be loaded from jthe json file.')
 
+# Vehicle type 
 parser.add_argument('--p79', action='store_true', help = 'If this is p79 data, pass true.')
 parser.add_argument('--aran', action='store_true', help = 'If this is aran data, pass true.')
 parser.add_argument('--viafrik', action='store_true', help = 'If this is Viafrik friction data, pass true.')
 
+# Do map matching and plot results on OSM
 parser.add_argument('--map_match', action='store_true', help = 'To map match GPS coordinates, pass true. The default is False.')
 parser.add_argument('--plot', action='store_true', help = 'To plot data on Open Streep Map, pass true. The default is False.')
 
+# Other settings
 parser.add_argument('--routes_file', default= "json/routes.json", help='Json file with route information.')
 parser.add_argument('--conn_file', default= "json/.connection.json", help='Json file with connection information.')
 parser.add_argument('--out_dir', default= "data", help='Output directory.')
@@ -59,11 +63,9 @@ preload_map_matched = args.preload_map_matched
 preload_plots = args.preload_plots
 dev_mode = args.dev_mode
 
-
 #=========================#
 # PREPARATION 
 #=========================#
-
 # Check if exactly one data type is chosen
 datatypes_bool = [p79, aran, viafrik]
 n_datatypes = datatypes_bool.count(True)
@@ -141,17 +143,26 @@ for trip in trips_thisroute:
     file_suff =  'route-{0}_taskid-{1}_{2}'.format(route, trip, datatype)
     full_map_match_filename = '{0}/map_matched_data{1}.pickle'.format(out_dir_route, file_suff)
             
-    # Load if asked to preload the map matched file and if it exists 
+    # Load precomputed map matched file if asked if it exists 
     if do_map_match and preload_map_matched:
         
         if os.path.exists(full_map_match_filename):
             print('Loading map matched result: {0}'.format(full_map_match_filename))
             DRD_data = pd.read_pickle(full_map_match_filename)
-         
+            
+            '''
+            defects = [col for col in DRD_data.columns if (('Cracks' in col) or ('Pothole' in col))]
+            DRD_data.replace(np.NaN,0,inplace=True)
+            DRD_data[defects].plot(legend=False)
+            def_corr = DRD_data[defects].corr()
+            sns.heatmap(def_corr)
+            '''
+            
             # Plot corrected trajectory on OSRM
             if plot:
                 plot_geolocation(DRD_data['lon_map'],  DRD_data['lat_map'], name = 'DRD_{0}_GPS_mapmatched_gpspoints'.format(trip), out_dir = out_dir_plots, plot_firstlast = 100, preload = preload_plots)
                 
+
         else:
              print('Map match output file not found. Exiting')
              sys.exit(0)

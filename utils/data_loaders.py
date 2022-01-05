@@ -11,7 +11,7 @@ import sys,os, glob
 from datetime import datetime
 import pickle
 from json import loads
-
+  
 
 def load_DRD_data(DRD_trip, conn_data, prod_db = True, p79 = False, aran = False, viafrik = False, dev_mode = False, load_n_rows = 500):
     '''
@@ -166,13 +166,12 @@ def check_nans(sql_data, is_aran = False, exclude_cols = []):
 
 def filter_DRDtrips_by_year(DRD_trips, sel_2021 = False, sel_2020 = False):
     DRD_trips['Datetime']=pd.to_datetime(DRD_trips['Created_Date'])
+    DRD_trips['Year'] = DRD_trips['Datetime'].apply(lambda row: row.year)
     if sel_2020: 
-        DRD_trips['Year'] = DRD_trips['Datetime'].apply(lambda date: '2020')
-        DRD_trips = DRD_trips[ DRD_trips['Year']=='2020']
+        DRD_trips = DRD_trips[ DRD_trips['Year']==2020]
     elif sel_2021:
-        DRD_trips['Year'] = DRD_trips['Datetime'].apply(lambda date: '2021')
-        DRD_trips[ DRD_trips['Year']=='2021']
-    DRD_trips.drop(['Datetime','Year'], axis=1, inplace=True)
+        DRD_trips = DRD_trips[ DRD_trips['Year']==2021]
+    DRD_trips.drop(['Datetime'], axis=1, inplace=True)
     return DRD_trips
     
 
