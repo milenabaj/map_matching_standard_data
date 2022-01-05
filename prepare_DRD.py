@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(description='Please provide command line argume
 
 # Route and trip - set one of the two
 parser.add_argument('--route', default= None, help='Process all trips on this route, given in json file.')
-parser.add_argument('--trip', default = 7792, type=int, help='Process this trip only. The route name will be loaded from jthe json file.')
+parser.add_argument('--trip', help='Process this trip only. The route name will be loaded from jthe json file.')
 
 # Vehicle type 
 parser.add_argument('--p79', action='store_true', help = 'If this is p79 data, pass true.')
@@ -37,7 +37,8 @@ parser.add_argument('--conn_file', default= "json/.connection.json", help='Json 
 parser.add_argument('--out_dir', default= "data", help='Output directory.')
 parser.add_argument('--preload_map_matched', action='store_true', help = 'Preload map matched output if it exists.') 
 parser.add_argument('--preload_plots', action='store_true', help = 'Preload plots if they exist.') 
-parser.add_argument('--dev_mode', action='store_true', help = 'Development mode. Will process a limited number of lines. Use only for testing.') 
+parser.add_argument('--dev_mode', action='store_true', help = 'Development mode. Will process a limited number of lines.') 
+parser.add_argument('--dev_mode_n_lines', type = int, default = 500, help = 'Process this number of lines in development mode.') 
 
 # Parse arguments
 args = parser.parse_args()
@@ -62,7 +63,7 @@ out_dir = args.out_dir
 preload_map_matched = args.preload_map_matched
 preload_plots = args.preload_plots
 dev_mode = args.dev_mode
-
+n_lines = args.dev_mode_n_lines
 #=========================#
 # PREPARATION 
 #=========================#
@@ -169,7 +170,7 @@ for trip in trips_thisroute:
              
     # Else do the pipeline
     else:
-        DRD_data, iri, DRD_trips = load_DRD_data(trip, conn_data, p79 = p79, aran = aran, viafrik = viafrik, dev_mode = dev_mode) 
+        DRD_data, iri, DRD_trips = load_DRD_data(trip, conn_data, p79 = p79, aran = aran, viafrik = viafrik, dev_mode = dev_mode, load_n_rows = n_lines) 
 
         # Drop duplicate columns (due to ocassical errors in database)
         DRD_data, iri = drop_duplicates(DRD_data, iri)
