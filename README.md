@@ -1,15 +1,18 @@
 Author: Milena Bajic
 
 # Package Description
-A package which preprocesses and map matches standard data for analysis. 
-The map matching is done using the OSRM service which runs Hidden Markov Model in the
-background which corrects raw GPS coordinates to the Open Street Map road network.  
+A package which preprocesses standard data for analysis. 
+The code performs map matching using the OSRM service, running a Hidden Markov Model in the background. 
+
+
+As a result, the GPS coordinates are corrected to the Open Street Map road networks. 
+The package in addition includes handy functions to plot 
+uncorrected and corrected GPS trajectories on Open Street Map in the web browser.
 
 ![Example](example_trip.png)
 
 # Run instructions
-**Prerequisites:**  To access the database, the access has to be granded. VPS is required in addition.
-
+**Prerequisites:** To access the database, you need a VPN and database credentials. 
 
 To run the code, run prepare_DRD.py script with additional options: 
 * You must pass one vehicle type: either --p79, --viafrik or --aran. <br/>
@@ -18,8 +21,8 @@ To run the code, run prepare_DRD.py script with additional options:
     * 2) --trip <trip_id>: the route name should not be passed, it will be loaded from json/routes.json is the trip is found there or it will be set to unkown if it is not found.<br/>
 * Additional options:<br/>
     * 1) --map_match: run map matching using OSRM (default: False)<br/>
-    * 2) --plot: plot and save trip trajectory on Open Street Map if a web-browser is available. (default: False)<br/>
-    * 3) --conn_file: json file with connection credentials (
+    * 2) --plot: plot and save trip trajectory on Open Street Map if a web-browser is available, else only the trip geometry. (default: False)<br/>
+    * 3) --conn_file: json file with connection data (default: hidden json/.connection.json)
     * 4) --routes_file: json file with route information (default: json/routes.json)<br/>
     * 5) --out_dir: set base output directory (default is data and will be created in the current directory is not already present)<br/>
     * 6) --preload_map_matched: if passed with --map_match, the map matched output will be loaded but not recreated.  Primarily used for debugging. (default: False) <br/>
