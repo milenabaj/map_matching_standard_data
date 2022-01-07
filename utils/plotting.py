@@ -2,7 +2,10 @@
 @author: Milena Bajic (DTU Compute)
 e-mail: lenka.bajic@gmail.com
 """
-import sys, os, pickle, time
+import sys 
+import os.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import os, pickle, time
 import numpy as np
 import matplotlib.pyplot as plt
 import mplleaflet
@@ -89,36 +92,43 @@ def plot_geolocation(longitudes, latitudes, name = 'map', out_dir = '.', plot_fi
         
     # Html map
     if plot_html_map:
-        from selenium import webdriver
-        
-        print('Will try to open web browser')
-        html_name = name.replace('.png','.html')
-        
-        # Html can't plot with legend
-        if fig.axes[0].get_legend():
-            fig.axes[0].get_legend().remove()
-            
-        # If webbrowser available, plot it
-        mplleaflet.display(fig, tiles='cartodb_positron')
-        mplleaflet.show(fig, html_name)
-        print('File saved: {0}'.format(html_name))
-         
-        # Save pdf prinout of the webpage
-        html_link = 'file://{0}/{1}'.format(os.getcwd(),html_name)
-        printout_name = name.replace('.png','_printout.png')
-        #print(html_link)
-        
-        browser = webdriver.Firefox()
-        browser.get(html_link)
-        
-        #Give the map tiles some time to load
-        time.sleep(10)
         try:
-            browser.save_screenshot(printout_name)
+            from selenium import webdriver
+            from selenium_firefox import Firefox
+            
+            print('Will try to open web browser')
+            html_name = name.replace('.png','.html')
+            
+            # Html can't plot with legend
+            if fig.axes[0].get_legend():
+                fig.axes[0].get_legend().remove()
+                
+            # If webbrowser available, plot it
+            mplleaflet.display(fig, tiles='cartodb_positron')
+            mplleaflet.show(fig, html_name)
+            print('File saved: {0}'.format(html_name))
+             
+            # Save pdf printout of the webpage
+            html_link = 'file://{0}/{1}'.format(os.getcwd(),html_name)
+            printout_name = name.replace('.png','_printout.png')
+            #print(html_link)
+            
+            browser = Firefox()
+            browser.get('https://www.google.com')
+            #browser = webdriver.Firefox()
+            browser.get(html_link)
+            
+            #Give the map tiles some time to load
+            time.sleep(10)
+            try:
+                browser.save_screenshot(printout_name)
+            except:
+                pass
+            browser.quit()
         except:
+            print('Not able to open a webbrowser. Skipping plotting on OSM.')
             pass
-        browser.quit()
-
+            
     return fig
 
 
